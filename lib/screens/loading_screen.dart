@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:weatherrr/services/location.dart';
+import 'package:weatherrr/screens/location_screen.dart';
+
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:weatherrr/services/weather.dart';
+
+
+
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -9,48 +14,44 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  late http.Response response; // Declare the response variable here
+
+
+
+
+  late http.Response response; 
 
   @override
   void initState() {
     super.initState();
-    getLocation();
+    getLocationData();
   }
 
-  void getLocation() async {
-    Location location = Location();
-    await location.getCurrentLocation();
-
-    print(location.latitude);
-    print(location.longitude);
+  void getLocationData() async {
     
+   var weatherData = await WeatherModel().getLocationweather();
+
+
+Navigator.push(context, MaterialPageRoute(builder: (context) {
+  return LocationScreen(locationWeather: weatherData,);
+}));
   }
-
-  void getData() async {
-    response = await http.get(Uri.parse(
-        'api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=6777dc51388a56bffc2b1427b7927d06'));
-
-    if (response.statusCode == 200) {
-      String data = response.body;
-
-      var longitude = jsonDecode(data)['coord']['lon'];
-      
-      print(data);
-    } else {
-      print(response.body);
-    }
-  }
+  
+  
 
   @override
   Widget build(BuildContext context) {
-    getData();
-    return Scaffold(
+    
+    return const Scaffold(
       body: Center(
-        child: TextButton(
-          onPressed: getLocation,
-          child: Text('Get Location'),
-        ),
-      ),
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
+        )
+      )
     );
   }
+
 }
+
+
+
